@@ -1,3 +1,4 @@
+#include "wm.h"
 #include <WiFiManager.h>  //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
 WiFiManager wm;
@@ -15,5 +16,5 @@ void wm_init(void){
   std::vector<const char *> menu = {"wifi"};    // Убираем из меню все кноме настроки WIFI
   wm.setMenu(menu);
 
-  wm.autoConnect(Hostname.c_str());    
+  wm.autoConnect(getHostname().c_str());    
 }

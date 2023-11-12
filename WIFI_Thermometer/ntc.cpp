@@ -1,4 +1,6 @@
+#include "ntc.h"
 #include <math.h>
+#include <Arduino.h>
 
 double getTempNTC() {
   int val = 0;

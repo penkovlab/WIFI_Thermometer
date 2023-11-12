@@ -1,3 +1,5 @@
+#include "ds18b20.h"
+
 #define postingInterval 300000                  // Интервал между отправками данных на narodmon в миллисекундах (5 минут)
 unsigned long lastConnectionTime = 0;           // Время последней передачи данных на narodmon
 
@@ -19,7 +21,7 @@ bool SendToNarodmon(){
     
   String buf;                                                             // Формируем пакет
     
-  buf = "#" + Hostname + "#WiFi термометр\n";                             // ID и название устройства
+  buf = "#" + getHostname() + "#WiFi термометр\n";                             // ID и название устройства
     
   buf += "#RSSI#" + String(WiFi.RSSI()) + "#Уровень сигнала\n";           // Уровень сигнала
     
@@ -27,26 +29,11 @@ bool SendToNarodmon(){
     buf += "#TEMP#" + String(getTempNTC(),2) + "#NTC\n";                  // NTC термометр
   #endif
   #ifdef DS18
-    DS_handle();
-    for (unsigned char i = 0; i < num; i++)  {
+    for (unsigned char i = 0; i < getOneWireSensorsCount(); i++)  {
         buf += "#";
-        for (unsigned char j = 0; j < 8; j++){
-          if (allDevices[i].id[j] < 16) buf = buf + "0"; 
-          buf = buf + String(allDevices[i].id[j], HEX);
-        }
-
+        buf += addressToString(DS18B20_sensors[i].deviceAddress);
         buf += "#";
-     
-        word tmp = allDevices[i].temperature;
-  
-        if ((tmp & 0x8000)){
-          buf += "-";
-          tmp = -tmp;
-          buf += String((float)tmp * 0.0625);
-        }else{
-          buf += String((float)tmp * 0.0625);
-        }
-          
+        buf += String(DS18B20_sensors[i].temperature, 2);
         buf += "\n";
      }      
   #endif

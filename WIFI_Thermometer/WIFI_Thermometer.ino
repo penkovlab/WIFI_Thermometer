@@ -1,33 +1,38 @@
+#include <ESP8266WiFi.h>
 #include "ntc.h"
 #include "ds18b20.h"
 #include "helpers.h"
+#include "wm.h"
 
 // Параметры комплектации
-#define SENSOR_DS18B20
-//#define SENSOR_NTC
+#define DS18
+//#define NTC
 
-String Hostname;   
+
 
 void setup() {
   Serial.begin(115000);
-  
-  #ifdef SENSOR_DS18B20
-    oneWireInit();
-  #endif
-  
-  WiFi.mode(WIFI_STA); 
 
-  Hostname = "ESP00" + WiFi.macAddress();
-  Hostname.replace(":","");
+#ifdef DS18
+  oneWireInit();
+#endif
+
+  WiFi.mode(WIFI_STA);
 
   wm_init();
 }
 
 void loop() {
-  if (WiFi.status() == WL_CONNECTED){
+#ifdef DS18
+  oneWireLoop();
+#endif
+
+  yield();
+
+  if (WiFi.status() == WL_CONNECTED) {
     led_on();
     narodmon_Handle();
-  }else{
+  } else {
     led_off();
   }
 }
